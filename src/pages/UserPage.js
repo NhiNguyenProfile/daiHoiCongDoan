@@ -1,7 +1,7 @@
 import { Helmet } from "react-helmet-async";
 import { filter } from "lodash";
 import { sentenceCase } from "change-case";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 // @mui
 import {
   Card,
@@ -184,7 +184,13 @@ export default function UserPage() {
   };
 
   //----------------------------------------------------------------
-
+  useEffect(() => {
+    const token = localStorage.getItem("Token");
+    console.log(token);
+    if (!token) {
+      navigate("/", { replace: true });
+    }
+  }, []);
   
   return (
     <>
@@ -198,6 +204,7 @@ export default function UserPage() {
           alignItems="center"
           justifyContent="space-between"
           mb={5}
+          
         >
           <Typography
             variant="h4"

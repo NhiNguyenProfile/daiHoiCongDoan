@@ -30,7 +30,6 @@ export default function Router() {
         { element: <Navigate to="/app" />, index: true },
         { path: "app", element: <DashboardAppPage /> },
         { path: "user", element: <UserPage /> },
-        { path: "products", element: <ProductsPage /> },
         { path: "mail", element: <Mail /> },
         { path: "giveIdea", element: <GiveIdea /> },
         { path: "voteControl", element: <VoteController /> },

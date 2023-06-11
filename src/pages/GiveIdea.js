@@ -15,7 +15,7 @@ import {
 // components
 import Iconify from "../components/iconify";
 import { Navigate, useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { LoadingButton } from "@mui/lab";
 import { MuiFileInput } from "mui-file-input";
 import { getUser } from "src/_mock/account";
@@ -69,6 +69,12 @@ export default function GiveIdea() {
   const handleClick = () => {
     navigate("/dashboard/giveIdea", { replace: true });
   };
+  useEffect(() => {
+    const token = localStorage.getItem("Token");
+    if (!token) {
+      navigate("/", { replace: true });
+    }
+  }, []);
 
   
   return (

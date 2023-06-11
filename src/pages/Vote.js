@@ -29,7 +29,7 @@ import {
   AppCurrentSubject,
   AppConversionRates,
 } from "../sections/@dashboard/app";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
 import { getUser } from "src/_mock/account";
 import { getAuth } from "firebase/auth";
@@ -53,6 +53,12 @@ export default function Vote() {
   const handleAccept = () => {
     setOpenDialog(false);
   };
+  useEffect(() => {
+    const token = localStorage.getItem("Token");
+    if (!token) {
+      navigate("/", { replace: true });
+    }
+  }, []);
 
   
   return (
@@ -84,7 +90,7 @@ export default function Vote() {
                 width: "60%",
               }}
             >
-              Quản lý biểu quyết
+              Biểu quyết
             </Typography>
             <Container
               style={{
@@ -101,8 +107,8 @@ export default function Vote() {
                   borderRadius: "500px",
                   padding: "15px",
                   marginBottom: "10px",
-                  backgroundColor: "#ffc107",
-                  color: "#fff",
+                  backgroundColor: "#ffefbe",
+                  color: "#e4ab00",
                 }}
                 onClick={handleClickOpen}
               >
@@ -126,7 +132,7 @@ export default function Vote() {
                 theme.palette.info.main,
                 theme.palette.error.main,
               ]}
-              type="polarArea"
+              type="donut"
             />
           </Grid>
 

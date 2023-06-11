@@ -1,7 +1,7 @@
 import { Helmet } from "react-helmet-async";
 import { filter } from "lodash";
 import { sentenceCase } from "change-case";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 // @mui
 import {
   Card,
@@ -127,6 +127,12 @@ export default function Map() {
   );
 
   const isNotFound = !filteredUsers.length && !!filterName;
+  useEffect(() => {
+    const token = localStorage.getItem("Token");
+    if (!token) {
+      navigate("/", { replace: true });
+    }
+  }, []);
 
   return (
     <>
@@ -160,7 +166,7 @@ export default function Map() {
                         key={headCell.id}
                         align={headCell.alignRight ? "right" : "left"}
                         sortDirection={orderBy === headCell.id ? order : false}
-                        style={{ backgroundColor: "#242423", color: "#FFF" }}
+                        style={{ backgroundColor: "#fff", color: "#40403f" }}
                       >
                         <Typography noWrap style={{ fontWeight: "900" }}>
                           {headCell.label}

@@ -19,7 +19,7 @@ const GREY = {
 const PRIMARY = {
   lighter: '#fff',
   light: '#DDE6ED',
-  main: '#2c5aa0',
+  main: '#0f76b9',
   dark: '#526D82',
   darker: '#27374D',
   contrastText: '#fff',
@@ -55,7 +55,7 @@ const SUCCESS = {
 const WARNING = {
   lighter: '#fff8d6',
   light: '#fff0ad',
-  main: '#0299da',
+  main: '#54b2e6',
   dark: '#efcd5d',
   darker: '#d3b44e',
   contrastText: GREY[800],

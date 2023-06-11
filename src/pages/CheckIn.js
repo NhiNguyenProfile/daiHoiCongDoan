@@ -10,7 +10,7 @@ import {
 import { Helmet } from "react-helmet-async";
 import { filter } from "lodash";
 import { sentenceCase } from "change-case";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 // @mui
 import {
   Card,
@@ -34,15 +34,12 @@ import {
 } from "@mui/material";
 // components
 import Label from "../components/label";
-import Iconify from "../components/iconify";
 import Scrollbar from "../components/scrollbar";
 // sections
 import { UserListHead, UserListToolbar } from "../sections/@dashboard/user";
 // mock
 import USERLIST from "../_mock/user";
 import { Navigate, useNavigate } from "react-router-dom";
-import { getUser } from "src/_mock/account";
-import { getAuth } from "firebase/auth";
 
 // ----------------------------------------------------------------------
 
@@ -89,7 +86,6 @@ function applySortFilter(array, comparator, query) {
   }
   return stabilizedThis.map((el) => el[0]);
 }
-
 
 export default function CheckIn() {
   const theme = useTheme();
@@ -172,9 +168,15 @@ export default function CheckIn() {
     getComparator(order, orderBy),
     filterName
   );
+
+  useEffect(() => {
+    const token = localStorage.getItem("Token");
+    if (!token) {
+      navigate("/", { replace: true });
+    }
+  }, []);
   
 
-  
   const isNotFound = !filteredUsers.length && !!filterName;
   return (
     <>
@@ -182,19 +184,49 @@ export default function CheckIn() {
         <title>Báo cáo điểm danh</title>
       </Helmet>
       <Container>
+        <Grid
+          item
+          xs={12}
+          sm={3}
+          md={12}
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <img
+            src="https://lh3.googleusercontent.com/XpoM86_fgcDAZI4R87gVUdJs6etNjQ1TpNlYfLt5T7GvqoWoLnwAtNevdQyHNujYgT-rtXPmAJqfvs30wh8RLMfPR0pcVKN8HDf7-Yqy7TbKd_AN1e3yM-GHI1eSywuNEvSmhxc7=w2400"
+            alt="logo Đại Biểu Công Chức"
+            style={{ height: "15vh", width: "15vh" }}
+          />
+          <h1
+            style={{
+              color: "#fff",
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+              alignItems: "center",
+              textAlign: "center",
+            }}
+          >
+            <strong style={{ fontWeight: "900" }}>
+              ĐẠI HỘI CÔNG ĐOÀN VIÊN CHỨC
+            </strong>
+            <p style={{ opacity: "0.6", fontSize: "4vh" }}>
+              NHIỆM KÌ IV 2023-2028
+            </p>
+          </h1>
+        </Grid>
+
+        
         <Stack
           direction="row"
           alignItems="center"
           justifyContent="space-between"
           mb={5}
         >
-          <Typography
-            variant="h4"
-            gutterBottom
-            style={{ fontWeight: "900", color: "white", fontSize: "5vh" }}
-          >
-            Báo cáo điểm danh
-          </Typography>
         </Stack>
         <Grid container spacing={6}>
           <Grid item xs={12} md={6} lg={4}>
@@ -213,7 +245,7 @@ export default function CheckIn() {
               type="donut"
             />
           </Grid>
-          <Grid item xs={12} sm={6} md={8}>
+          <Grid item xs={12} md={6} lg={8}>
             {/* <Typography variant="h3" sx={{fontSize:"30px", fontWeight:"900", color: "#fff"}}>Đã điểm danh:</Typography>
             <BlogPostCard
               key={currentPerson.code}
@@ -229,7 +261,7 @@ export default function CheckIn() {
                 />
 
                 <Scrollbar>
-                  <TableContainer sx={{ minWidth: 800 }}>
+                  <TableContainer sx={{ minWidth: 900 }}>
                     <Table>
                       <UserListHead
                         order={order}

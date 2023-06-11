@@ -4,7 +4,7 @@ h1, h2, h3, h4, h5, h6, p, span, div, .MuiTypography-root.MuiTypography-h6, inpu
   font-family: 'Montserrat', sans-serif !important;
 }
 .MuiTypography-root.MuiTypography-h6 {
-  font-weight: 900;
+  font-weight: 800;
   color: "#242423";
 }
 .simplebar-placeholder {
@@ -12,14 +12,19 @@ h1, h2, h3, h4, h5, h6, p, span, div, .MuiTypography-root.MuiTypography-h6, inpu
 }
 
 body {
-  background-image: url("https://i.imgur.com/nUVfdVW.jpg");
+  background-image: url("https://i.imgur.com/9vuEqTd.jpg");
   background-size: cover;
   background-repeat: no-repeat;
   background-attachment: fixed;
 }
 
-@media screen and (min-width: 768px) {
-  
+@media screen and (max-width: 768px) {
+  body {
+    background-image: url("https://i.imgur.com/rfObGDT.jpg");
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+  }
 }
 
 code {

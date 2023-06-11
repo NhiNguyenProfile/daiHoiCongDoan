@@ -1,10 +1,58 @@
 {
   "hosting": {
     "public": "build",
-    "ignore": [
-      "firebase.json",
-      "**/.*",
-      "**/node_modules/**"
+    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+    "redirects": [
+      {
+        "source": "/login",
+        "destination": "/",
+        "type": 301
+      },
+      {
+        "source": "/dashboard",
+        "destination": "/",
+        "type": 301
+      },
+      {
+        "source": "/dashboard/app",
+        "destination": "/",
+        "type": 301
+      },
+      {
+        "source": "/dashboard/user",
+        "destination": "/",
+        "type": 301
+      },
+      {
+        "source": "/dashboard/mail",
+        "destination": "/",
+        "type": 301
+      },
+      {
+        "source": "/dashboard/giveIdea",
+        "destination": "/",
+        "type": 301
+      },
+      {
+        "source": "/dashboard/voteControl",
+        "destination": "/",
+        "type": 301
+      },
+      {
+        "source": "/dashboard/checkIn",
+        "destination": "/",
+        "type": 301
+      },
+      {
+        "source": "/dashboard/map",
+        "destination": "/",
+        "type": 301
+      },
+      {
+        "source": "/dashboard/vote",
+        "destination": "/",
+        "type": 301
+      }
     ]
   }
 }

@@ -15,7 +15,7 @@ const LEGEND_HEIGHT = 72;
 
 const StyledChartWrapper = styled('div')(({ theme }) => ({
   height: CHART_HEIGHT,
-  marginTop: theme.spacing(5),
+  marginTop: theme.spacing(2),
   '& .apexcharts-canvas svg': { height: CHART_HEIGHT },
   '& .apexcharts-canvas svg,.apexcharts-canvas foreignObject': {
     overflow: 'visible',
@@ -50,7 +50,7 @@ export default function AppCurrentVisits({ title, subheader, chartColors, chartD
     colors: chartColors,
     labels: chartLabels,
     stroke: {
-      width: 1,
+      width: 2,
       colors: undefined
     },
     yaxis: {
@@ -70,7 +70,7 @@ export default function AppCurrentVisits({ title, subheader, chartColors, chartD
     },
     
     plotOptions: {
-      pie: { donut: { labels: { show: false } } },
+      pie: { donut: { labels: { show: false }, size: '60%'} },
       polarArea: {
         rings: {
           strokeWidth: 0

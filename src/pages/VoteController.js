@@ -20,12 +20,19 @@ import {
 import { Navigate, useNavigate } from "react-router-dom";
 import { getUser } from "src/_mock/account";
 import { getAuth } from "firebase/auth";
+import { useEffect } from "react";
 
 // ----------------------------------------------------------------------
 
 export default function VoteController() {
   const theme = useTheme();
   const navigate = useNavigate();
+  useEffect(() => {
+    const token = localStorage.getItem("Token");
+    if (!token) {
+      navigate("/", { replace: true });
+    }
+  }, []);
   return (
     <>
       <Helmet>
@@ -77,7 +84,7 @@ export default function VoteController() {
                 }}
               >
                 <Typography variant="p" noWrap style={{ fontWeight: "900" }}>
-                Tạo nhiệm nhiệm kì mới
+                Tạo nhiệm kì mới
                 </Typography>
               </Button>
               <Button
@@ -91,7 +98,7 @@ export default function VoteController() {
                 }}
               >
                 <Typography variant="p" noWrap style={{ fontWeight: "900" }}>
-                Tạo biểu quyết mới
+                Tạo biểu quyết
                 </Typography>
               </Button>
             </Container>
@@ -110,7 +117,7 @@ export default function VoteController() {
                 theme.palette.info.main,
                 theme.palette.error.main,
               ]}
-              type="polarArea"
+              type="donut"
             />
           </Grid>
 

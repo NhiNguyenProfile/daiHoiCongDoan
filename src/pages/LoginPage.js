@@ -61,30 +61,26 @@ export default function LoginPage() {
   const signUpWithGoogle = async () => {
     try {
       await signInWithPopup(auth, googleProvider).then((res) => {
-        console.log(res.user);
-        sessionStorage.setItem("Token", res.user.refreshToken)
-        navigate("/dashboard/app", { replace: true });
-      })
-      
+        localStorage.setItem("Token", res.user.uid);
+        const token = localStorage.getItem("Token");
+        if (token != undefined && token == "ADMIN") {
+          document.dispatchEvent(new CustomEvent("reloadNav", {status : "admin"}))
+          navigate("/dashboard/app", { replace: true });
+          
+        } else if (token != undefined && token != "ADMIN") {
+          document.dispatchEvent(new CustomEvent("reloadNav", {status : "user"}))
+          navigate("/dashboard/checkIn", { replace: true });
+        }
+      });
     } catch (err) {
       console.log(err);
     }
   };
 
-  useEffect(() => {
-    const token = sessionStorage.getItem("Token")
-    if(token) {
-      navigate("/dashboard/app", { replace: true });
-    }
-  }, [])
-
-
- 
-
   return (
     <>
       <Helmet>
-        <title> Dại Hội Công Đoàn Viên Chức </title>
+        <title> Đại Hội Công Đoàn Viên Chức </title>
       </Helmet>
 
       <StyledRoot>
@@ -157,7 +153,11 @@ export default function LoginPage() {
                   size="large"
                   color="inherit"
                   variant="outlined"
-                  style={{ backgroundColor: "#DF3E30" }}
+                  style={{
+                    backgroundColor: "#DF3E30",
+                    boxShadow:
+                      "rgba(0, 0, 0, 0.4) 0px 2px 4px, rgba(0, 0, 0, 0.3) 0px 7px 13px -3px, rgba(0, 0, 0, 0.2) 0px -3px 0px inset",
+                  }}
                   onClick={signUpWithGoogle}
                 >
                   <Iconify

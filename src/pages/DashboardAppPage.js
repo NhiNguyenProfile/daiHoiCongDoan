@@ -7,7 +7,7 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import { Helmet } from "react-helmet-async";
-import { Card, Container, Grid, Typography } from "@mui/material";
+import { Card, Container, Grid, Typography, Button } from "@mui/material";
 import {
   AppCurrentVisits,
   AppWidgetSummary,
@@ -27,20 +27,20 @@ const rows = [
   createData(2, "Eclair"),
 ];
 
-
 export default function DashboardAppPage() {
   const navigate = useNavigate();
   const theme = useTheme();
   React.useEffect(() => {
-    const token = sessionStorage.getItem("Token")
-    if(!token) {
-      navigate("/login", { replace: true });
+    const token = localStorage.getItem("Token");
+    if (!token) {
+      navigate("/", { replace: true });
     }
-  }, [])
+  }, []);
+  
   return (
     <>
-    {/* {user == undefined ? <Navigate to="/login" /> : null} */}
-    
+      {/* {user == undefined ? <Navigate to="/login" /> : null} */}
+
       <Helmet>
         <title> Quản lí đại hội </title>
       </Helmet>
@@ -118,23 +118,7 @@ export default function DashboardAppPage() {
             />
           </Grid>
 
-          <Grid item xs={12} md={6} lg={4}>
-            <AppCurrentVisits
-              title="Tỉ lệ biểu quyết"
-              chartData={[
-                { label: "Đồng Thuận", value: 4344 },
-                { label: "Không đồng thuận", value: 5435 },
-              ]}
-              chartColors={[
-                theme.palette.warning.main,
-                theme.palette.primary.main,
-                theme.palette.info.main,
-                theme.palette.error.main,
-              ]}
-              type="polarArea"
-            />
-          </Grid>
-          <Grid item xs={12} md={6} lg={8}>
+          <Grid item xs={12} md={6} lg={12}>
             <TableContainer
               component={Paper}
               style={{
@@ -142,7 +126,7 @@ export default function DashboardAppPage() {
                   "rgba(0, 0, 0, 0.4) 0px 2px 4px, rgba(0, 0, 0, 0.3) 0px 7px 13px -3px, rgba(0, 0, 0, 0.2) 0px -3px 0px inset",
               }}
             >
-              <Table sx={{ minWidth: 200 }} aria-label="caption table">
+              <Table sx={{ minWidth: 500 }} aria-label="caption table">
                 <TableHead>
                   <TableRow>
                     <TableCell style={{ width: "150px" }} align="center">
@@ -167,6 +151,69 @@ export default function DashboardAppPage() {
                       </TableCell>
                       <TableCell align="center">
                         <Typography>{row.idea}</Typography>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </Grid>
+          <Grid item xs={12} md={6} lg={12}>
+            <TableContainer
+              component={Paper}
+              style={{
+                boxShadow:
+                  "rgba(0, 0, 0, 0.4) 0px 2px 4px, rgba(0, 0, 0, 0.3) 0px 7px 13px -3px, rgba(0, 0, 0, 0.2) 0px -3px 0px inset",
+              }}
+            >
+              <Table sx={{ minWidth: 500 }} aria-label="caption table">
+                <TableHead>
+                  <TableRow>
+                    <TableCell style={{ width: "150px" }} align="center">
+                      <Typography style={{ fontWeight: "800" }}>
+                        Số thứ tự
+                      </Typography>
+                    </TableCell>
+                    <TableCell>
+                      <Typography style={{ fontWeight: "800" }} align="center">
+                        Thư gửi đại hội
+                      </Typography>
+                    </TableCell>
+                    <TableCell>
+                      <Typography style={{ fontWeight: "800" }} align="center">
+                        Tệp đính kèm
+                      </Typography>
+                    </TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {rows.map((row) => (
+                    <TableRow key={row.id}>
+                      <TableCell component="th" scope="row" align="center">
+                        <Typography style={{ fontWeight: "800" }}>
+                          {row.id}
+                        </Typography>
+                      </TableCell>
+                      <TableCell align="center">
+                        <Typography>{row.idea}</Typography>
+                      </TableCell>
+                      <TableCell align="center">
+                        <Button
+                          size="large"
+                          style={{
+                            boxShadow: `rgba(0, 0, 0, 0.4) 0px 2px 4px, rgba(0, 0, 0, 0.3) 0px 7px 13px -3px, rgba(0, 0, 0, 0.2) 0px -3px 0px inset`,
+                            borderRadius: "5px",
+                            padding: "10px 20px",
+                            backgroundColor: "#ffefbe",
+                            color: "#e4ab00",
+                          }}
+                        >
+                          <Typography
+                            style={{ fontWeight: "900" }}
+                          >
+                            Xem tài liệu
+                          </Typography>
+                        </Button>
                       </TableCell>
                     </TableRow>
                   ))}
