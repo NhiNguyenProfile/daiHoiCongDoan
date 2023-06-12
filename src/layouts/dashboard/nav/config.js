@@ -33,8 +33,8 @@ let navConfig =[
       },
       {
         title: 'Đăng xuất',
-        path: '/',
-        icon: icon('ic_vote'),
+        navigateInfo: "/login",
+        icon: icon('ic_lock'),
       },
     ];
   

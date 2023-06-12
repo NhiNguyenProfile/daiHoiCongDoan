@@ -30,12 +30,7 @@ const rows = [
 export default function DashboardAppPage() {
   const navigate = useNavigate();
   const theme = useTheme();
-  React.useEffect(() => {
-    const token = localStorage.getItem("Token");
-    if (!token) {
-      navigate("/", { replace: true });
-    }
-  }, []);
+
   
   return (
     <>

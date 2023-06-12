@@ -168,13 +168,6 @@ export default function CheckIn() {
     getComparator(order, orderBy),
     filterName
   );
-
-  useEffect(() => {
-    const token = localStorage.getItem("Token");
-    if (!token) {
-      navigate("/", { replace: true });
-    }
-  }, []);
   
 
   const isNotFound = !filteredUsers.length && !!filterName;
@@ -252,7 +245,6 @@ export default function CheckIn() {
               currentPerson={currentPerson}
               index={0}
             /> */}
-            <Container>
               <Card>
                 <UserListToolbar
                   numSelected={selected.length}
@@ -398,7 +390,6 @@ export default function CheckIn() {
                   onRowsPerPageChange={handleChangeRowsPerPage}
                 />
               </Card>
-            </Container>
           </Grid>
         </Grid>
       </Container>

@@ -67,9 +67,6 @@ export default function Nav({ openNav, onCloseNav }) {
       onCloseNav();
     }
   }, [pathname]);
-  {
-    console.log("render");
-  }
 
   return (
     <Box
@@ -196,8 +193,6 @@ export default function Nav({ openNav, onCloseNav }) {
                 </StyledAccount>
               </Link>
             </Box>
-
-            {console.log("Renderne2 ma")}
             <NavSection data={localStorage.getItem("Token") != "ADMIN" ? navConfig : navConfigAdmin} />
 
             {/* <img src="/assets/illustrations/VietNam.svg" style={{width: "500px", opacity: "0.5"}}></img> */}

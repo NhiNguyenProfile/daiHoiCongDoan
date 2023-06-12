@@ -53,12 +53,6 @@ export default function Vote() {
   const handleAccept = () => {
     setOpenDialog(false);
   };
-  useEffect(() => {
-    const token = localStorage.getItem("Token");
-    if (!token) {
-      navigate("/", { replace: true });
-    }
-  }, []);
 
   
   return (

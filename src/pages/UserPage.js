@@ -184,13 +184,7 @@ export default function UserPage() {
   };
 
   //----------------------------------------------------------------
-  useEffect(() => {
-    const token = localStorage.getItem("Token");
-    console.log(token);
-    if (!token) {
-      navigate("/", { replace: true });
-    }
-  }, []);
+
   
   return (
     <>

@@ -1,9 +1,12 @@
-import PropTypes from 'prop-types';
-import { NavLink as RouterLink } from 'react-router-dom';
+import PropTypes from "prop-types";
+import { NavLink as RouterLink, useNavigate } from "react-router-dom";
 // @mui
-import { Box, List, ListItemText } from '@mui/material';
+import { Box, Container, List, ListItemText } from "@mui/material";
 //
-import { StyledNavItem, StyledNavItemIcon } from './styles';
+import { StyledNavItem, StyledNavItemIcon } from "./styles";
+import { onAuthStateChanged, signInAnonymously, signOut } from "firebase/auth";
+import { auth } from "src/config/firebase";
+import { set } from "lodash";
 
 // ----------------------------------------------------------------------
 
@@ -29,26 +32,62 @@ NavItem.propTypes = {
   item: PropTypes.object,
 };
 
+
 function NavItem({ item }) {
-  const { title, path, icon, info } = item;
+
+  
+  const { title, path, icon, info, navigateInfo } = item;
+
+  const navigate = useNavigate();
+
+  const logout = () => {
+    signOut(auth);
+    localStorage.clear();
+    setTimeout(() => {
+      navigate("/login", { replace: true });
+    }, 500)
+  };
 
   return (
-    <StyledNavItem
-      component={RouterLink}
-      to={path}
-      sx={{
-        '&.active': {
-          color: '#242423',
-          bgcolor: 'action.selected',
-          fontWeight: 'fontWeightBold',
-        },
-      }}
-    >
-      <StyledNavItemIcon>{icon && icon}</StyledNavItemIcon>
+    <div>
+      {path ? (
+        <StyledNavItem
+          component={RouterLink}
+          to={path}
+          sx={{
+            "&.active": {
+              color: "#242423",
+              bgcolor: "action.selected",
+              fontWeight: "fontWeightBold",
+            },
+          }}
+        >
+          <StyledNavItemIcon>{icon && icon}</StyledNavItemIcon>
 
-      <ListItemText disableTypography primary={title} />
+          <ListItemText disableTypography primary={title} />
 
-      {info && info}
-    </StyledNavItem>
+          {info && info}
+        </StyledNavItem>
+      ) : (
+        <StyledNavItem
+          component={RouterLink}
+          to={navigateInfo}
+          onClick={logout}
+          sx={{
+            "&.active": {
+              color: "#242423",
+              bgcolor: "action.selected",
+              fontWeight: "fontWeightBold",
+            },
+          }}
+        >
+          <StyledNavItemIcon>{icon && icon}</StyledNavItemIcon>
+
+          <ListItemText disableTypography primary={title} />
+
+          {info && info}
+        </StyledNavItem>
+      )}
+    </div>
   );
 }

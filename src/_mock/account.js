@@ -6,7 +6,6 @@ let currentId,
   currentEmailVerified;
 
 export function getUser() {
-  console.log(currentId)
   return {
     currentId,
     currentDisplayName,

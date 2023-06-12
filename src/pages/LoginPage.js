@@ -1,8 +1,12 @@
 import { Helmet } from "react-helmet-async";
-import { signInWithPopup } from "firebase/auth";
+import { signInAnonymously, signInWithPopup } from "firebase/auth";
 import React, { useEffect, useState } from "react";
 import { auth, googleProvider } from "../config/firebase";
-import { getAuth, onAuthStateChanged } from "firebase/auth";
+import {
+  getAuth,
+  onAuthStateChanged,
+  createUserWithEmailAndPassword,
+} from "firebase/auth";
 // @mui
 import { styled } from "@mui/material/styles";
 import {
@@ -58,24 +62,31 @@ export default function LoginPage() {
   const mdUp = useResponsive("up", "md");
   const navigate = useNavigate();
 
-  const signUpWithGoogle = async () => {
-    try {
-      await signInWithPopup(auth, googleProvider).then((res) => {
-        localStorage.setItem("Token", res.user.uid);
-        const token = localStorage.getItem("Token");
-        if (token != undefined && token == "ADMIN") {
-          document.dispatchEvent(new CustomEvent("reloadNav", {status : "admin"}))
-          navigate("/dashboard/app", { replace: true });
-          
-        } else if (token != undefined && token != "ADMIN") {
-          document.dispatchEvent(new CustomEvent("reloadNav", {status : "user"}))
-          navigate("/dashboard/checkIn", { replace: true });
-        }
+  const signInAnonymous = () => {
+    signInAnonymously(auth)
+      .then(() => {})
+      .catch((error) => {
+        const errorCode = error.code;
+        const errorMessage = error.message;
       });
-    } catch (err) {
-      console.log(err);
-    }
   };
+
+  useEffect(() => {
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        const uid = user.uid;
+        console.log(uid);
+        navigate("/dashboard/checkIn", { replace: true });
+      } else {
+        if (localStorage.getItem("Token") == "ADMIN") {
+          document.dispatchEvent(new CustomEvent("reloadNav"));
+          setTimeout(() => {
+            navigate("/dashboard/app", { replace: true });
+          }, 500);
+        }
+      }
+    });
+  }, []);
 
   return (
     <>
@@ -112,9 +123,14 @@ export default function LoginPage() {
         )}
 
         <Card
-          style={{ marginTop: "5vh", marginRight: "5vw", marginLeft: "5vw" }}
+          style={{
+            marginTop: "5vh",
+            marginRight: "3vw",
+            marginLeft: "2vw",
+            marginBottom: "5vh",
+          }}
         >
-          <Container maxWidth="sm">
+          <Container>
             <StyledContent>
               <Stack
                 direction="column"
@@ -147,33 +163,25 @@ export default function LoginPage() {
                 </h1>
               </Stack>
 
-              <Stack direction="row" spacing={2}>
+              <Stack direction="row" spacing={0}>
                 <Button
                   fullWidth
                   size="large"
-                  color="inherit"
-                  variant="outlined"
                   style={{
-                    backgroundColor: "#DF3E30",
+                    backgroundColor: "#FFC107",
                     boxShadow:
                       "rgba(0, 0, 0, 0.4) 0px 2px 4px, rgba(0, 0, 0, 0.3) 0px 7px 13px -3px, rgba(0, 0, 0, 0.2) 0px -3px 0px inset",
+                    padding: "10px 0",
                   }}
-                  onClick={signUpWithGoogle}
+                  onClick={signInAnonymous}
                 >
-                  <Iconify
-                    icon="eva:google-fill"
-                    color="#fff"
-                    width={22}
-                    height={22}
-                  />
                   <Typography
                     style={{
                       fontWeight: "800",
-                      color: "#fff",
-                      paddingLeft: "5px",
+                      color: "#FFF",
                     }}
                   >
-                    Gmail
+                    Đăng nhập với vai trò đại biểu
                   </Typography>
                 </Button>
               </Stack>

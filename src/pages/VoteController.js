@@ -27,12 +27,7 @@ import { useEffect } from "react";
 export default function VoteController() {
   const theme = useTheme();
   const navigate = useNavigate();
-  useEffect(() => {
-    const token = localStorage.getItem("Token");
-    if (!token) {
-      navigate("/", { replace: true });
-    }
-  }, []);
+
   return (
     <>
       <Helmet>

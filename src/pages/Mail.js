@@ -71,12 +71,7 @@ export default function Mail() {
     navigate("/dashboard/mail", { replace: true });
   };
 
-  useEffect(() => {
-    const token = localStorage.getItem("Token");
-    if (!token) {
-      navigate("/", { replace: true });
-    }
-  }, []);
+
 
   return (
     <>

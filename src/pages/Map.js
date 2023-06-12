@@ -127,12 +127,7 @@ export default function Map() {
   );
 
   const isNotFound = !filteredUsers.length && !!filterName;
-  useEffect(() => {
-    const token = localStorage.getItem("Token");
-    if (!token) {
-      navigate("/", { replace: true });
-    }
-  }, []);
+
 
   return (
     <>

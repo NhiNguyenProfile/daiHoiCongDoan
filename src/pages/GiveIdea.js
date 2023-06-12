@@ -69,12 +69,7 @@ export default function GiveIdea() {
   const handleClick = () => {
     navigate("/dashboard/giveIdea", { replace: true });
   };
-  useEffect(() => {
-    const token = localStorage.getItem("Token");
-    if (!token) {
-      navigate("/", { replace: true });
-    }
-  }, []);
+
 
   
   return (
