@@ -30,6 +30,9 @@ const user = getUser();
 // ----------------------------------------------------------------------
 
 export default function Mail() {
+  const [mail, setMail] = useState("");
+
+
   const StyledTextarea = {
     fontFamily: "'Montserrat', sans-serif",
     fontSize: "1rem",
@@ -102,6 +105,9 @@ export default function Mail() {
             minRows={4}
             placeholder="Hãy nhập lời nhắn vào đây"
             style={StyledTextarea}
+            onChange={(e) => {
+              setMail(e.target.value)
+            }}
           />
 
           <MuiFileInput

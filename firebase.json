@@ -34,11 +34,6 @@
         "type": 301
       },
       {
-        "source": "/dashboard/voteControl",
-        "destination": "/",
-        "type": 301
-      },
-      {
         "source": "/dashboard/checkIn",
         "destination": "/",
         "type": 301
@@ -49,7 +44,12 @@
         "type": 301
       },
       {
-        "source": "/dashboard/vote",
+        "source": "/dashboard/documents",
+        "destination": "/",
+        "type": 301
+      },
+      {
+        "source": "/dashboard/imagesAndVideo",
         "destination": "/",
         "type": 301
       }

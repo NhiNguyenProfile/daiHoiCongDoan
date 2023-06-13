@@ -27,15 +27,21 @@ let navConfig =[
         icon: icon('ic_talk'),
       },
       {
-        title: 'Biểu quyết',
-        path: '/dashboard/vote',
-        icon: icon('ic_vote'),
+        title: 'Tài liệu đại hội',
+        path: "/dashboard/documents",
+        icon: icon("ic_documents"),
+      },
+      {
+        title: 'Hình ảnh và video',
+        path: "/dashboard/imagesAndVideo",
+        icon: icon('ic_image'),
       },
       {
         title: 'Đăng xuất',
         navigateInfo: "/login",
         icon: icon('ic_lock'),
       },
+      
     ];
   
 

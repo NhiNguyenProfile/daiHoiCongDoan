@@ -3,25 +3,26 @@ import { sample } from 'lodash';
 
 // ----------------------------------------------------------------------
 
-const users = [...Array(10)].map((_, index) => ({
-  id: faker.datatype.uuid(),
-  avatarUrl: `/assets/images/avatars/avatar_${index + 1}.jpg`,
-  name: faker.name.fullName(),
-  company: faker.company.name(),
-  isVerified: faker.datatype.boolean(),
-  status: sample(['active', 'banned']),
-  role: sample([
-    'Leader',
-    'Hr Manager',
-    'UI Designer',
-    'UX Designer',
-    'UI/UX Designer',
-    'Project Manager',
-    'Backend Developer',
-    'Full Stack Designer',
-    'Front End Developer',
-    'Full Stack Developer',
-  ]),
-}));
+// Sort results by id in descending order, take two
+// and return the age as an integer.
+
+import {ref, onValue, get, child, getDatabase} from "firebase/database";
+import { database } from 'src/config/firebase';
+const dbRef = ref(getDatabase());
+let users = [];
+
+get(child(dbRef, `16Po4bHTR9VUAKvcS2SsiSNZlcov7ygvpMJND6-hrM7o/users`)).then((snapshot) => {
+  if (snapshot.exists()) {
+    snapshot.forEach((user) => {
+      users.push(user.val());
+    })
+    
+  } else {
+    console.log("No data available");
+  }
+}).catch((error) => {
+  console.error(error);
+});
+
 
 export default users;

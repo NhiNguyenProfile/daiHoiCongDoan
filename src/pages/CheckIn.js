@@ -40,18 +40,24 @@ import { UserListHead, UserListToolbar } from "../sections/@dashboard/user";
 // mock
 import USERLIST from "../_mock/user";
 import { Navigate, useNavigate } from "react-router-dom";
+import { ref } from "firebase/database";
 
 // ----------------------------------------------------------------------
 
 // ----------------------------------------------------------------------
 const TABLE_HEAD = [
+  { id: "id", label: "Mã Số ĐB", alignRight: false },
   { id: "name", label: "Họ và tên", alignRight: false },
-  { id: "company", label: "Chức danh", alignRight: false },
-  { id: "role", label: "Vai trò", alignRight: false },
-  { id: "isVerified", label: "Mã", alignRight: false },
-  { id: "status", label: "Trạng thái", alignRight: false },
-  { id: "" },
+  { id: "cdcs", label: "CĐCS", alignRight: false },
+  { id: "workplace", label: "Chức vụ, Đơn vị công tác", alignRight: false },
 ];
+
+// ----------------------------------------------------------------------
+
+
+
+
+
 
 // ----------------------------------------------------------------------
 
@@ -93,17 +99,22 @@ export default function CheckIn() {
 
   const [page, setPage] = useState(0);
 
+  const [change, setChange] = useState(false)
+
   const [order, setOrder] = useState("asc");
 
   const [selected, setSelected] = useState([]);
 
-  const [orderBy, setOrderBy] = useState("name");
+  const [orderBy, setOrderBy] = useState("id");
 
   const [filterName, setFilterName] = useState("");
 
   const [rowsPerPage, setRowsPerPage] = useState(5);
+  
 
   const navigate = useNavigate();
+
+  
 
   const handleOpenMenu = (event) => {
     setOpen(event.currentTarget);
@@ -168,15 +179,23 @@ export default function CheckIn() {
     getComparator(order, orderBy),
     filterName
   );
-  
 
   const isNotFound = !filteredUsers.length && !!filterName;
+
+   //----------------------------------------------------------------
+   setTimeout(() => {
+    setChange(!change);
+  }, 100)
+
+  setTimeout(() => {
+    setChange(!change);
+  }, 500)
   return (
     <>
       <Helmet>
         <title>Báo cáo điểm danh</title>
       </Helmet>
-      <Container>
+      <Container status={change}>
         <Grid
           item
           xs={12}
@@ -213,14 +232,12 @@ export default function CheckIn() {
           </h1>
         </Grid>
 
-        
         <Stack
           direction="row"
           alignItems="center"
           justifyContent="space-between"
           mb={5}
-        >
-        </Stack>
+        ></Stack>
         <Grid container spacing={6}>
           <Grid item xs={12} md={6} lg={4}>
             <AppCurrentVisits
@@ -245,151 +262,119 @@ export default function CheckIn() {
               currentPerson={currentPerson}
               index={0}
             /> */}
-              <Card>
-                <UserListToolbar
-                  numSelected={selected.length}
-                  filterName={filterName}
-                  onFilterName={handleFilterByName}
-                />
+            <Card>
+              <UserListToolbar
+                numSelected={selected.length}
+                filterName={filterName}
+                onFilterName={handleFilterByName}
+              />
 
-                <Scrollbar>
-                  <TableContainer sx={{ minWidth: 900 }}>
-                    <Table>
-                      <UserListHead
-                        order={order}
-                        orderBy={orderBy}
-                        headLabel={TABLE_HEAD}
-                        rowCount={USERLIST.length}
-                        numSelected={selected.length}
-                        onRequestSort={handleRequestSort}
-                        onSelectAllClick={handleSelectAllClick}
-                      />
-                      <TableBody>
-                        {filteredUsers
-                          .slice(
-                            page * rowsPerPage,
-                            page * rowsPerPage + rowsPerPage
-                          )
-                          .map((row) => {
-                            const {
-                              id,
-                              name,
-                              role,
-                              status,
-                              company,
-                              avatarUrl,
-                              isVerified,
-                            } = row;
-                            const selectedUser = selected.indexOf(name) !== -1;
+              <Scrollbar>
+                <TableContainer sx={{ minWidth: 800 }}>
+                  <Table>
+                    <UserListHead
+                      order={order}
+                      orderBy={orderBy}
+                      headLabel={TABLE_HEAD}
+                      rowCount={USERLIST.length}
+                      numSelected={selected.length}
+                      onRequestSort={handleRequestSort}
+                      onSelectAllClick={handleSelectAllClick}
+                    />
+                    <TableBody>
+                      {filteredUsers.slice(
+                        page * rowsPerPage,
+                        page * rowsPerPage + rowsPerPage
+                      ).map((row) => {
+                        const { id, name, cdcs, workplace, avatarUrl } = row;
+                        const selectedUser = selected.indexOf(name) !== -1;
 
-                            return (
-                              <TableRow
-                                hover
-                                key={id}
-                                tabIndex={-1}
-                                role="checkbox"
-                                selected={selectedUser}
-                              >
-                                <TableCell padding="checkbox"></TableCell>
+                        return (
+                          <TableRow
+                            hover
+                            key={id}
+                            tabIndex={-1}
+                            role="checkbox"
+                            selected={selectedUser}
+                          >
+                            <TableCell align="left">
+                              <Typography>{id}</Typography>
+                            </TableCell>
 
-                                <TableCell
-                                  component="th"
-                                  scope="row"
-                                  padding="none"
-                                >
-                                  <Stack
-                                    direction="row"
-                                    alignItems="center"
-                                    spacing={2}
-                                  >
-                                    <Avatar alt={name} src={avatarUrl} />
-                                    <Typography
-                                      style={{ fontWeight: "800" }}
-                                      noWrap
-                                    >
-                                      {name}
-                                    </Typography>
-                                  </Stack>
-                                </TableCell>
-
-                                <TableCell align="left">
-                                  <Typography>{company}</Typography>
-                                </TableCell>
-
-                                <TableCell align="left">
-                                  <Typography>{role}</Typography>
-                                </TableCell>
-
-                                <TableCell align="left">
-                                  <Typography>
-                                    {isVerified ? "Yes" : "No"}
-                                  </Typography>
-                                </TableCell>
-
-                                <TableCell align="left">
-                                  <Label
-                                    color={
-                                      (status === "banned" && "error") ||
-                                      "success"
-                                    }
-                                  >
-                                    <Typography>
-                                      {sentenceCase(status)}
-                                    </Typography>
-                                  </Label>
-                                </TableCell>
-                              </TableRow>
-                            );
-                          })}
-                        {emptyRows > 0 && (
-                          <TableRow style={{ height: 20 * emptyRows }}>
-                            <TableCell colSpan={6} />
-                          </TableRow>
-                        )}
-                      </TableBody>
-
-                      {isNotFound && (
-                        <TableBody>
-                          <TableRow>
                             <TableCell
-                              align="center"
-                              colSpan={6}
-                              sx={{ py: 3 }}
+                              component="th"
+                              scope="row"
+                              padding="none"
                             >
-                              <Paper
-                                sx={{
-                                  textAlign: "center",
-                                }}
+                              <Stack
+                                direction="row"
+                                alignItems="center"
+                                spacing={2}
                               >
-                                <Typography variant="h6" paragraph>
-                                  Not found
+                                <Avatar alt={name} src={avatarUrl} />
+                                <Typography
+                                  style={{ fontWeight: "800" }}
+                                  noWrap
+                                >
+                                  {name}
                                 </Typography>
+                              </Stack>
+                            </TableCell>
 
-                                <Typography variant="body2">
-                                  No results found for &nbsp;
-                                  <strong>&quot;{filterName}&quot;</strong>.
-                                  <br /> Try checking for typos or using
-                                  complete words.
-                                </Typography>
-                              </Paper>
+                            <TableCell align="left">
+                              <Typography>{cdcs}</Typography>
+                            </TableCell>
+
+                            <TableCell align="left">
+                              <Typography>{workplace}</Typography>
                             </TableCell>
                           </TableRow>
-                        </TableBody>
+                        );
+                      })}
+                      {emptyRows > 0 && (
+                        <TableRow style={{ height: 20 * emptyRows }}>
+                          <TableCell colSpan={6} />
+                        </TableRow>
                       )}
-                    </Table>
-                  </TableContainer>
-                </Scrollbar>
+                    </TableBody>
 
-                <TablePagination
-                  rowsPerPageOptions={[5, 10, 25]}
-                  component="div"
-                  count={USERLIST.length}
-                  rowsPerPage={rowsPerPage}
-                  page={page}
-                  onPageChange={handleChangePage}
-                  onRowsPerPageChange={handleChangeRowsPerPage}
-                />
-              </Card>
+                    {isNotFound && (
+                      <TableBody>
+                        <TableRow>
+                          <TableCell align="center" colSpan={6} sx={{ py: 3 }}>
+                            <Paper
+                              sx={{
+                                textAlign: "center",
+                              }}
+                            >
+                              <Typography variant="h6" paragraph>
+                                Không tìm thấy
+                              </Typography>
+
+                              <Typography variant="body2">
+                                Không có kết quả cho &nbsp;
+                                <strong>&quot;{filterName}&quot;</strong>.
+                                <br /> Thử tìm kiếm lại với tên đầy đủ
+                              </Typography>
+                            </Paper>
+                          </TableCell>
+                        </TableRow>
+                      </TableBody>
+                    )}
+                  </Table>
+                </TableContainer>
+              </Scrollbar>
+
+              <TablePagination
+                rowsPerPageOptions={[5, 10, 25]}
+                component="div"
+                count={USERLIST.length}
+                rowsPerPage={rowsPerPage}
+                page={page}
+                onPageChange={handleChangePage}
+                onRowsPerPageChange={handleChangeRowsPerPage}
+              />
+            </Card>
           </Grid>
         </Grid>
       </Container>

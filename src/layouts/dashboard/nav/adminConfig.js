@@ -17,11 +17,6 @@ let navConfigAdmin = [
         icon: icon('ic_user'),
       },
       {
-        title: 'Quản lí biểu quyết',
-        path: '/dashboard/voteControl',
-        icon: icon('ic_chart'),
-      },
-      {
         title: 'Báo cáo điểm danh',
         path: '/dashboard/checkIn',
         icon: icon('ic_checkIn'),
@@ -30,6 +25,16 @@ let navConfigAdmin = [
         title: 'Sơ đồ chỗ ngồi',
         path: '/dashboard/map',
         icon: icon('ic_map'),
+      },
+      {
+        title: 'Tài liệu đại hội',
+        path: "/dashboard/documents",
+        icon: icon("ic_documents"),
+      },
+      {
+        title: 'Hình ảnh và video',
+        path: "/dashboard/imagesAndVideo",
+        icon: icon('ic_image'),
       },
       {
         title: 'Đăng xuất',

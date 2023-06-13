@@ -1,5 +1,5 @@
 import { Helmet } from "react-helmet-async";
-import { filter } from "lodash";
+import { filter, set } from "lodash";
 import { sentenceCase } from "change-case";
 import { useEffect, useState } from "react";
 // @mui
@@ -39,17 +39,38 @@ import USERLIST from "../_mock/user";
 import { Navigate, useNavigate } from "react-router-dom";
 import { getUser } from "src/_mock/account";
 import { getAuth } from "firebase/auth";
+import {ref, onValue, get, child, getDatabase} from "firebase/database";
 
 // ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
+  { id: "id", label: "Mã Số ĐB", alignRight: false },
   { id: "name", label: "Họ và tên", alignRight: false },
-  { id: "company", label: "Chức danh", alignRight: false },
-  { id: "role", label: "Vai trò", alignRight: false },
-  { id: "isVerified", label: "Mã", alignRight: false },
-  { id: "status", label: "Trạng thái", alignRight: false },
-  { id: "" },
+  { id: "cdcs", label: "CĐCS", alignRight: false },
+  { id: "workplace", label: "Chức vụ, Đơn vị công tác", alignRight: false },
 ];
+
+
+
+const dbRef = ref(getDatabase());
+let users = [];
+
+
+get(child(dbRef, `16Po4bHTR9VUAKvcS2SsiSNZlcov7ygvpMJND6-hrM7o/users`)).then((snapshot) => {
+  if (snapshot.exists()) {
+    snapshot.forEach((user) => {
+      users.push(user.val());
+    })
+    
+  } else {
+    console.log("No data available");
+  }
+}).catch((error) => {
+  console.error(error);
+});
+
+
+
 
 // ----------------------------------------------------------------------
 
@@ -89,17 +110,22 @@ export default function UserPage() {
 
   const [page, setPage] = useState(0);
 
+  const [change, setChange] = useState(false)
+
   const [order, setOrder] = useState("asc");
 
   const [selected, setSelected] = useState([]);
 
-  const [orderBy, setOrderBy] = useState("name");
+  const [orderBy, setOrderBy] = useState("id");
 
   const [filterName, setFilterName] = useState("");
 
   const [rowsPerPage, setRowsPerPage] = useState(5);
+  
 
   const navigate = useNavigate();
+
+  
 
   const handleOpenMenu = (event) => {
     setOpen(event.currentTarget);
@@ -117,7 +143,7 @@ export default function UserPage() {
 
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
-      const newSelecteds = USERLIST.map((n) => n.name);
+      const newSelecteds = users.map((n) => n.name);
       setSelected(newSelecteds);
       return;
     }
@@ -157,10 +183,10 @@ export default function UserPage() {
   };
 
   const emptyRows =
-    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - USERLIST.length) : 0;
+    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - users.length) : 0;
 
   const filteredUsers = applySortFilter(
-    USERLIST,
+    users,
     getComparator(order, orderBy),
     filterName
   );
@@ -184,6 +210,13 @@ export default function UserPage() {
   };
 
   //----------------------------------------------------------------
+  setTimeout(() => {
+    setChange(!change);
+  }, 100)
+
+  setTimeout(() => {
+    setChange(!change);
+  }, 500)
 
   
   return (
@@ -192,7 +225,7 @@ export default function UserPage() {
         <title>Danh sách đại biểu</title>
       </Helmet>
 
-      <Container>
+      <Container status={change}>
         <Stack
           direction="row"
           alignItems="center"
@@ -235,7 +268,7 @@ export default function UserPage() {
                   order={order}
                   orderBy={orderBy}
                   headLabel={TABLE_HEAD}
-                  rowCount={USERLIST.length}
+                  rowCount={users.length}
                   numSelected={selected.length}
                   onRequestSort={handleRequestSort}
                   onSelectAllClick={handleSelectAllClick}
@@ -247,11 +280,9 @@ export default function UserPage() {
                       const {
                         id,
                         name,
-                        role,
-                        status,
-                        company,
+                        cdcs,
+                        workplace,
                         avatarUrl,
-                        isVerified,
                       } = row;
                       const selectedUser = selected.indexOf(name) !== -1;
 
@@ -263,12 +294,7 @@ export default function UserPage() {
                           role="checkbox"
                           selected={selectedUser}
                         >
-                          <TableCell padding="checkbox">
-                            <Checkbox
-                              checked={selectedUser}
-                              onChange={(event) => handleClick(event, name)}
-                            />
-                          </TableCell>
+                          <TableCell align="left"><Typography>{id}</Typography></TableCell>
 
                           <TableCell component="th" scope="row" padding="none">
                             <Stack
@@ -283,33 +309,10 @@ export default function UserPage() {
                             </Stack>
                           </TableCell>
 
-                          <TableCell align="left"><Typography>{company}</Typography></TableCell>
+                          <TableCell align="left"><Typography>{cdcs}</Typography></TableCell>
 
-                          <TableCell align="left"><Typography>{role}</Typography></TableCell>
+                          <TableCell align="left"><Typography>{workplace}</Typography></TableCell>
 
-                          <TableCell align="left">
-                          <Typography>{isVerified ? "Yes" : "No"}</Typography>
-                          </TableCell>
-
-                          <TableCell align="left">
-                            <Label
-                              color={
-                                (status === "banned" && "error") || "success"
-                              }
-                            >
-                              <Typography>{sentenceCase(status)}</Typography>
-                            </Label>
-                          </TableCell>
-
-                          <TableCell align="right">
-                            <IconButton
-                              size="large"
-                              color="inherit"
-                              onClick={handleOpenMenu}
-                            >
-                              <Iconify icon={"eva:more-vertical-fill"} />
-                            </IconButton>
-                          </TableCell>
                         </TableRow>
                       );
                     })}
@@ -330,14 +333,13 @@ export default function UserPage() {
                           }}
                         >
                           <Typography variant="h6" paragraph>
-                            Not found
+                            Không tìm thấy
                           </Typography>
 
                           <Typography variant="body2">
-                            No results found for &nbsp;
+                            Không có kết quả cho &nbsp;
                             <strong>&quot;{filterName}&quot;</strong>.
-                            <br /> Try checking for typos or using complete
-                            words.
+                            <br /> Thử tìm kiếm lại với tên đầy đủ
                           </Typography>
                         </Paper>
                       </TableCell>
@@ -351,7 +353,7 @@ export default function UserPage() {
           <TablePagination
             rowsPerPageOptions={[5, 10, 25]}
             component="div"
-            count={USERLIST.length}
+            count={users.length}
             rowsPerPage={rowsPerPage}
             page={page}
             onPageChange={handleChangePage}

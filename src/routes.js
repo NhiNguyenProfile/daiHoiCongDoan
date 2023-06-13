@@ -14,6 +14,8 @@ import Map from "./pages/Map";
 import Mail from "./pages/Mail";
 import GiveIdea from "./pages/GiveIdea";
 import Vote from "./pages/Vote";
+import Documents from "./pages/Documents";
+import ImageAndVideo from "./pages/ImageAndVideo";
 
 // ----------------------------------------------------------------------
 
@@ -32,10 +34,10 @@ export default function Router() {
         { path: "user", element: <UserPage /> },
         { path: "mail", element: <Mail /> },
         { path: "giveIdea", element: <GiveIdea /> },
-        { path: "voteControl", element: <VoteController /> },
         { path: "checkIn", element: <CheckIn /> },
         { path: "map", element: <Map />},
-        { path: "vote", element: <Vote />},
+        { path: "documents", element: <Documents />},
+        { path: "imagesAndVideo", element: <ImageAndVideo />}
       ],
     },
     
