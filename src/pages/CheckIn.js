@@ -40,7 +40,7 @@ import { UserListHead, UserListToolbar } from "../sections/@dashboard/user";
 // mock
 import USERLIST from "../_mock/user";
 import { Navigate, useNavigate } from "react-router-dom";
-import { ref } from "firebase/database";
+import { child, get, getDatabase, onValue, ref } from "firebase/database";
 
 // ----------------------------------------------------------------------
 
@@ -54,20 +54,39 @@ const TABLE_HEAD = [
 
 // ----------------------------------------------------------------------
 
+const dbRef = ref(getDatabase());
 
 
-
-
+function getPresent() {
+  let users = [];
+  get(child(dbRef, "144piK-psVVvdqRsuBe0suA2sIAnpaqR48T23lTqQV50/MaDiemDanh"))
+    .then((snapshot) => {
+      if (snapshot.exists()) {
+        snapshot.forEach((user) => {
+          users.push(USERLIST[Number(user.val().id) - 1]);
+        });
+      } else {
+        console.log("No data available");
+      }
+    })
+    .catch((error) => {
+      console.error(error);
+    });
+    return users;
+}
 
 // ----------------------------------------------------------------------
 
 function descendingComparator(a, b, orderBy) {
-  if (b[orderBy] < a[orderBy]) {
-    return -1;
+  if (a && b) {
+    if (b[orderBy] < a[orderBy]) {
+      return -1;
+    }
+    if (b[orderBy] > a[orderBy]) {
+      return 1;
+    }
   }
-  if (b[orderBy] > a[orderBy]) {
-    return 1;
-  }
+
   return 0;
 }
 
@@ -95,11 +114,13 @@ function applySortFilter(array, comparator, query) {
 
 export default function CheckIn() {
   const theme = useTheme();
+  const [present, setPresent] = useState(0);
+  const [presentUser, setPresentUser] = useState(getPresent());
   const [open, setOpen] = useState(null);
 
   const [page, setPage] = useState(0);
 
-  const [change, setChange] = useState(false)
+  const [change, setChange] = useState("yes");
 
   const [order, setOrder] = useState("asc");
 
@@ -110,11 +131,27 @@ export default function CheckIn() {
   const [filterName, setFilterName] = useState("");
 
   const [rowsPerPage, setRowsPerPage] = useState(5);
-  
 
   const navigate = useNavigate();
 
-  
+  useEffect(() => {
+    const dbRef = ref(
+      getDatabase(),
+      "144piK-psVVvdqRsuBe0suA2sIAnpaqR48T23lTqQV50/MaDiemDanh"
+    );
+    onValue(dbRef, (snapshot) => {
+      const data = snapshot.val();
+      if (data) {
+        setPresent(Object.keys(data).length);
+        let presentNow = [];
+        Object.keys(data).forEach((key) => {
+          console.log(key)
+          presentNow.push(USERLIST[Number(key) - 1]);
+        });
+        setPresentUser(presentNow);
+      }
+    });
+  }, [present]);
 
   const handleOpenMenu = (event) => {
     setOpen(event.currentTarget);
@@ -132,7 +169,7 @@ export default function CheckIn() {
 
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
-      const newSelecteds = USERLIST.map((n) => n.name);
+      const newSelecteds = presentUser.map((n) => n.name);
       setSelected(newSelecteds);
       return;
     }
@@ -172,24 +209,26 @@ export default function CheckIn() {
   };
 
   const emptyRows =
-    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - USERLIST.length) : 0;
+    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - presentUser.length) : 0;
 
   const filteredUsers = applySortFilter(
-    USERLIST,
+    presentUser,
     getComparator(order, orderBy),
     filterName
   );
 
   const isNotFound = !filteredUsers.length && !!filterName;
 
-   //----------------------------------------------------------------
-   setTimeout(() => {
-    setChange(!change);
-  }, 100)
+  //----------------------------------------------------------------
+  setTimeout(() => {
+    setChange("no");
+    setPresentUser(getPresent());
+  }, 1000);
 
   setTimeout(() => {
-    setChange(!change);
-  }, 500)
+    setChange("yes");
+    setPresentUser(getPresent());
+  }, 2000);
   return (
     <>
       <Helmet>
@@ -243,8 +282,8 @@ export default function CheckIn() {
             <AppCurrentVisits
               title="Tổng kết điểm danh"
               chartData={[
-                { label: "Vắng", value: 7 },
-                { label: "Hiện diện", value: 30 },
+                { label: "Vắng", value: USERLIST.length - present },
+                { label: "Hiện diện", value: present },
               ]}
               chartColors={[
                 theme.palette.warning.main,
@@ -276,61 +315,66 @@ export default function CheckIn() {
                       order={order}
                       orderBy={orderBy}
                       headLabel={TABLE_HEAD}
-                      rowCount={USERLIST.length}
+                      rowCount={presentUser.length}
                       numSelected={selected.length}
                       onRequestSort={handleRequestSort}
                       onSelectAllClick={handleSelectAllClick}
                     />
                     <TableBody>
-                      {filteredUsers.slice(
-                        page * rowsPerPage,
-                        page * rowsPerPage + rowsPerPage
-                      ).map((row) => {
-                        const { id, name, cdcs, workplace, avatarUrl } = row;
-                        const selectedUser = selected.indexOf(name) !== -1;
+                      {filteredUsers
+                        .slice(
+                          page * rowsPerPage,
+                          page * rowsPerPage + rowsPerPage
+                        )
+                        .map((row) => {
+                          if (row) {
+                            const { avatarUrl, cdcs, id, name, workplace } =
+                              row;
+                            const selectedUser = selected.indexOf(name) !== -1;
 
-                        return (
-                          <TableRow
-                            hover
-                            key={id}
-                            tabIndex={-1}
-                            role="checkbox"
-                            selected={selectedUser}
-                          >
-                            <TableCell align="left">
-                              <Typography>{id}</Typography>
-                            </TableCell>
-
-                            <TableCell
-                              component="th"
-                              scope="row"
-                              padding="none"
-                            >
-                              <Stack
-                                direction="row"
-                                alignItems="center"
-                                spacing={2}
+                            return (
+                              <TableRow
+                                hover
+                                tabIndex={-1}
+                                key={id}
+                                role="checkbox"
+                                selected={selectedUser}
                               >
-                                <Avatar alt={name} src={avatarUrl} />
-                                <Typography
-                                  style={{ fontWeight: "800" }}
-                                  noWrap
+                                <TableCell align="left">
+                                  <Typography>{id}</Typography>
+                                </TableCell>
+
+                                <TableCell
+                                  component="th"
+                                  scope="row"
+                                  padding="none"
                                 >
-                                  {name}
-                                </Typography>
-                              </Stack>
-                            </TableCell>
+                                  <Stack
+                                    direction="row"
+                                    alignItems="center"
+                                    spacing={2}
+                                  >
+                                    <Avatar alt={name} src={avatarUrl} />
+                                    <Typography
+                                      style={{ fontWeight: "800" }}
+                                      noWrap
+                                    >
+                                      {name}
+                                    </Typography>
+                                  </Stack>
+                                </TableCell>
 
-                            <TableCell align="left">
-                              <Typography>{cdcs}</Typography>
-                            </TableCell>
+                                <TableCell align="left">
+                                  <Typography>{cdcs}</Typography>
+                                </TableCell>
 
-                            <TableCell align="left">
-                              <Typography>{workplace}</Typography>
-                            </TableCell>
-                          </TableRow>
-                        );
-                      })}
+                                <TableCell align="left">
+                                  <Typography>{workplace}</Typography>
+                                </TableCell>
+                              </TableRow>
+                            );
+                          }
+                        })}
                       {emptyRows > 0 && (
                         <TableRow style={{ height: 20 * emptyRows }}>
                           <TableCell colSpan={6} />
@@ -368,7 +412,7 @@ export default function CheckIn() {
               <TablePagination
                 rowsPerPageOptions={[5, 10, 25]}
                 component="div"
-                count={USERLIST.length}
+                count={presentUser.length}
                 rowsPerPage={rowsPerPage}
                 page={page}
                 onPageChange={handleChangePage}

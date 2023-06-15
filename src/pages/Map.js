@@ -22,6 +22,7 @@ import {
   TableContainer,
   TablePagination,
   TableHead,
+  Grid,
 } from "@mui/material";
 // components
 import Label from "../components/label";
@@ -135,6 +136,7 @@ export default function Map() {
         <title>Sơ đồ chỗ ngồi</title>
       </Helmet>
       <Container>
+      
         <Stack
           direction="row"
           alignItems="center"

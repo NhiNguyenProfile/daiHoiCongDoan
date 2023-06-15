@@ -16,22 +16,87 @@ import { useTheme } from "@emotion/react";
 import { Navigate, useNavigate } from "react-router-dom";
 import { getUser } from "src/_mock/account";
 import { getAuth } from "firebase/auth";
-
-function createData(id, idea) {
-  return { id, idea };
-}
-
-const rows = [
-  createData(0, "Frozen yoghurt"),
-  createData(1, "Ice cream sandwich"),
-  createData(2, "Eclair"),
-];
+import { getDatabase, onValue, ref } from "firebase/database";
+import { useRef } from "react";
+import { auth, storage } from "src/config/firebase";
+import { getDownloadURL, getStorage } from "firebase/storage";
+import { ref as refS } from "firebase/storage";
+import { useState } from "react";
+import { set } from "lodash";
 
 export default function DashboardAppPage() {
   const navigate = useNavigate();
   const theme = useTheme();
+  const rows = useRef([]);
+  const mails = useRef([]);
+  const [change, setChange] = useState("yes");
 
-  
+  const link = useRef("");
+
+  const dbRefIdea = ref(getDatabase(), "idea");
+  onValue(dbRefIdea, (snapshot) => {
+    const data = snapshot.val();
+    if (data) {
+      const newRows = [];
+      data.forEach((value, key) => {
+        newRows.push(createData(key, value.message));
+      });
+      rows.current = newRows;
+    } else {
+      console.log("No data");
+    }
+  });
+  function createData(id, idea) {
+    return { id, idea };
+  }
+
+  const dbRefMail = ref(getDatabase(), "mail");
+  onValue(dbRefMail, (snapshot) => {
+    const data = snapshot.val();
+    if (data) {
+      const newRows = [];
+      data.forEach((value, key) => {
+        newRows.push(createDataMail(key, value.message, value.file));
+      });
+      mails.current = newRows;
+    } else {
+      console.log("No data");
+    }
+  });
+  function createData(id, idea) {
+    return { id, idea };
+  }
+
+  function createDataMail(id, message, fileName) {
+      return { id, message, fileName };
+  }
+  React.useEffect(() => {
+    mails.current.map((mail) => {
+      try {
+      getDownloadURL(refS(storage, `mail/${mail.fileName}`))
+      .then((url) => {
+        const tag = document.getElementById(mail.fileName);
+        if(tag) {
+          tag.setAttribute("href", url)
+        }
+      })
+      .catch((error) => {
+        console.log("Failed")
+      });
+    } catch (error) {
+      console.log("Failed")
+    }
+    })
+    
+  })
+  setTimeout(() => {
+    setChange("no");
+  }, 1000);
+
+  setTimeout(() => {
+    setChange("yes");
+  }, 2000);
+
   return (
     <>
       {/* {user == undefined ? <Navigate to="/login" /> : null} */}
@@ -77,41 +142,6 @@ export default function DashboardAppPage() {
               </p>
             </h1>
           </Grid>
-          <Grid item xs={12} sm={3} md={3}>
-            <AppWidgetSummary
-              title="Người sử dụng ứng dụng"
-              total={714000}
-              color="#fff"
-              icon={"ant-design:android-filled"}
-            />
-          </Grid>
-
-          <Grid item xs={12} sm={3} md={3}>
-            <AppWidgetSummary
-              title="Lần biểu quyết"
-              total={1352831}
-              color="#fff"
-              icon={"ant-design:apple-filled"}
-            />
-          </Grid>
-
-          <Grid item xs={12} sm={3} md={3}>
-            <AppWidgetSummary
-              title="Người hiện diện"
-              total={1723315}
-              color="#fff"
-              icon={"ant-design:windows-filled"}
-            />
-          </Grid>
-
-          <Grid item xs={12} sm={3} md={3}>
-            <AppWidgetSummary
-              title="Hiện diện"
-              total={23.5}
-              color="#fff"
-              icon={"ant-design:bug-filled"}
-            />
-          </Grid>
 
           <Grid item xs={12} md={6} lg={12}>
             <TableContainer
@@ -137,7 +167,7 @@ export default function DashboardAppPage() {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {rows.map((row) => (
+                  {rows.current.map((row) => (
                     <TableRow key={row.id}>
                       <TableCell component="th" scope="row" align="center">
                         <Typography style={{ fontWeight: "800" }}>
@@ -164,25 +194,25 @@ export default function DashboardAppPage() {
               <Table sx={{ minWidth: 500 }} aria-label="caption table">
                 <TableHead>
                   <TableRow>
-                    <TableCell style={{ width: "150px" }} align="center">
+                    <TableCell align="center">
                       <Typography style={{ fontWeight: "800" }}>
                         Số thứ tự
                       </Typography>
                     </TableCell>
-                    <TableCell>
-                      <Typography style={{ fontWeight: "800" }} align="center">
+                    <TableCell style={{display: "flex", justifyContent: "center", alignItems: "center"}}>
+                      <Typography style={{ fontWeight: "800"}} align="center">
                         Thư gửi đại hội
                       </Typography>
                     </TableCell>
                     <TableCell>
-                      <Typography style={{ fontWeight: "800" }} align="center">
+                      <Typography  style={{ fontWeight: "800"}} align="center">
                         Tệp đính kèm
                       </Typography>
                     </TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {rows.map((row) => (
+                  {mails.current.map((row) => (
                     <TableRow key={row.id}>
                       <TableCell component="th" scope="row" align="center">
                         <Typography style={{ fontWeight: "800" }}>
@@ -190,25 +220,32 @@ export default function DashboardAppPage() {
                         </Typography>
                       </TableCell>
                       <TableCell align="center">
-                        <Typography>{row.idea}</Typography>
+                        <Typography>{row.message}</Typography>
                       </TableCell>
                       <TableCell align="center">
-                        <Button
-                          size="large"
-                          style={{
+                        
+                        {row.fileName?(
+                          <Card style={{
                             boxShadow: `rgba(0, 0, 0, 0.4) 0px 2px 4px, rgba(0, 0, 0, 0.3) 0px 7px 13px -3px, rgba(0, 0, 0, 0.2) 0px -3px 0px inset`,
                             borderRadius: "5px",
                             padding: "10px 20px",
-                            backgroundColor: "#ffefbe",
-                            color: "#e4ab00",
+                            backgroundColor: "#ffc107",
+                          }} >
+                        <a
+                          size="large"
+                          style={{
+                            textDecoration: "none",
+                            color: "#fff",
                           }}
+                          id={row.fileName}
+                          
                         >
-                          <Typography
-                            style={{ fontWeight: "900" }}
-                          >
+                          <Typography style={{ fontWeight: "800" }}>
                             Xem tài liệu
                           </Typography>
-                        </Button>
+                        </a></Card>
+                        ): null}
+                        
                       </TableCell>
                     </TableRow>
                   ))}

@@ -52,6 +52,11 @@
         "source": "/dashboard/imagesAndVideo",
         "destination": "/",
         "type": 301
+      },
+      {
+        "source": "/dashboard/checkInTag",
+        "destination": "/",
+        "type": 301
       }
     ]
   }

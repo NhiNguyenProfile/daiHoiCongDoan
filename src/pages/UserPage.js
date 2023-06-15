@@ -69,6 +69,7 @@ get(child(dbRef, `16Po4bHTR9VUAKvcS2SsiSNZlcov7ygvpMJND6-hrM7o/users`)).then((sn
   console.error(error);
 });
 
+console.log("===============================")
 
 
 
@@ -216,7 +217,7 @@ export default function UserPage() {
 
   setTimeout(() => {
     setChange(!change);
-  }, 500)
+  }, 200)
 
   
   return (

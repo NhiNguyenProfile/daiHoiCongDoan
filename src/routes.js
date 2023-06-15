@@ -16,6 +16,7 @@ import GiveIdea from "./pages/GiveIdea";
 import Vote from "./pages/Vote";
 import Documents from "./pages/Documents";
 import ImageAndVideo from "./pages/ImageAndVideo";
+import CheckInTag from "./pages/CheckInTag";
 
 // ----------------------------------------------------------------------
 
@@ -37,7 +38,8 @@ export default function Router() {
         { path: "checkIn", element: <CheckIn /> },
         { path: "map", element: <Map />},
         { path: "documents", element: <Documents />},
-        { path: "imagesAndVideo", element: <ImageAndVideo />}
+        { path: "imagesAndVideo", element: <ImageAndVideo />},
+        { path: "checkInTag", element: <CheckInTag />}
       ],
     },
     

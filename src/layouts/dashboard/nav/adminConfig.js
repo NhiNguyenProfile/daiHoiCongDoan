@@ -17,6 +17,11 @@ let navConfigAdmin = [
         icon: icon('ic_user'),
       },
       {
+        title: 'Điểm danh',
+        path: '/dashboard/checkInTag',
+        icon: icon('ic_checkInTag'),
+      },
+      {
         title: 'Báo cáo điểm danh',
         path: '/dashboard/checkIn',
         icon: icon('ic_checkIn'),

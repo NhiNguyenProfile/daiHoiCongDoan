@@ -15,11 +15,13 @@ import {
 // components
 import Iconify from "../components/iconify";
 import { Navigate, useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { LoadingButton } from "@mui/lab";
 import { MuiFileInput } from "mui-file-input";
 import { getUser } from "src/_mock/account";
 import { getAuth } from "firebase/auth";
+import { child, get, getDatabase, onValue, ref, set } from "firebase/database";
+import { Toaster, toast } from "react-hot-toast";
 // import { BlogPostCard, BlogPostsSort, BlogPostsSearch } from '../sections/@dashboard/blog';
 // mock
 // import POSTS from '../_mock/blog';
@@ -29,6 +31,8 @@ import { getAuth } from "firebase/auth";
 // ----------------------------------------------------------------------
 
 export default function GiveIdea() {
+  const length = useRef(0);
+
   const StyledTextarea = {
     fontFamily: "'Montserrat', sans-serif",
     fontSize: "1rem",
@@ -60,18 +64,42 @@ export default function GiveIdea() {
   };
   const navigate = useNavigate();
 
-  const [file, setFile] = useState(null);
+  const [idea, setIdea] = useState("");
 
-  const handleChange = (newFile) => {
-    setFile(newFile);
-  };
+  const dbRef = ref(
+    getDatabase(),
+    "idea"
+  );
+  onValue(dbRef, (snapshot) => {
+    const data = snapshot.val();
+    if (data) {
+      length.current = Object.keys(data).length;
+    } else {
+      length.current = 0;
+    }
+  });
 
   const handleClick = () => {
-    navigate("/dashboard/giveIdea", { replace: true });
+    const db = getDatabase();
+    const dbRef = ref(getDatabase());
+
+    if (idea.length > 0) {
+      const reference = ref(db, "idea/" + (length.current + 1));
+      set(reference, {
+        message: idea,
+      }).then(() => {
+        setIdea("");
+        toast.success("Gửi thành công!");
+      });
+    } else {
+      toast.error("Vui lòng nhập đầy đủ thông tin!");
+    }
   };
 
+  const resetFrom = () => {
+    setIdea("");
+  };
 
-  
   return (
     <>
       <Helmet>
@@ -79,6 +107,7 @@ export default function GiveIdea() {
       </Helmet>
 
       <Container>
+        <Toaster />
         <Stack
           direction="row"
           alignItems="center"
@@ -101,6 +130,10 @@ export default function GiveIdea() {
             minRows={4}
             placeholder="Hãy nhập lời nhắn vào đây"
             style={StyledTextarea}
+            onChange={(e) => {
+              setIdea(e.target.value);
+            }}
+            value={idea}
           />
 
           <LoadingButton
@@ -123,6 +156,7 @@ export default function GiveIdea() {
               backgroundColor: "#ffefbe",
               color: "#e4ab00",
             }}
+            onClick={resetFrom}
           >
             <Typography variant="p" noWrap style={{ fontWeight: "900" }}>
               Đặt lại

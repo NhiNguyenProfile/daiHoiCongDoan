@@ -1,6 +1,3 @@
-import { faker } from '@faker-js/faker';
-import { sample } from 'lodash';
-
 // ----------------------------------------------------------------------
 
 // Sort results by id in descending order, take two
@@ -8,6 +5,7 @@ import { sample } from 'lodash';
 
 import {ref, onValue, get, child, getDatabase} from "firebase/database";
 import { database } from 'src/config/firebase';
+
 const dbRef = ref(getDatabase());
 let users = [];
 

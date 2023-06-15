@@ -15,11 +15,17 @@ import {
 // components
 import Iconify from "../components/iconify";
 import { Navigate, useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { LoadingButton } from "@mui/lab";
 import { MuiFileInput } from "mui-file-input";
 import { getUser } from "src/_mock/account";
 import { getAuth } from "firebase/auth";
+import { getDatabase, set, ref, get, child, onValue } from "firebase/database";
+import { storage } from "src/config/firebase";
+import { ref as refS, uploadBytes } from "firebase/storage";
+import swal from "sweetalert";
+import { Toaster, toast } from "react-hot-toast";
+
 // import { BlogPostCard, BlogPostsSort, BlogPostsSearch } from '../sections/@dashboard/blog';
 // mock
 // import POSTS from '../_mock/blog';
@@ -31,7 +37,7 @@ const user = getUser();
 
 export default function Mail() {
   const [mail, setMail] = useState("");
-
+  const length = useRef(0);
 
   const StyledTextarea = {
     fontFamily: "'Montserrat', sans-serif",
@@ -70,11 +76,55 @@ export default function Mail() {
     setFile(newFile);
   };
 
+  const dbRef = ref(
+    getDatabase(),
+    "mail"
+  );
+  onValue(dbRef, (snapshot) => {
+    const data = snapshot.val();
+    if (data) {
+      length.current = Object.keys(data).length;
+    } else {
+      length.current = 0;
+    }
+  });
+
   const handleClick = () => {
-    navigate("/dashboard/mail", { replace: true });
+    const db = getDatabase();
+    const reference = ref(db, "mail/" + (length.current + 1));
+    if (mail.length > 0) {
+      if (file) {
+        const refFile = refS(storage, `mail/${file.name}`);
+        uploadBytes(refFile, file)
+          .then((snapshot) => {
+            setFile(null);
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+          setFile(null);
+        set(reference, {
+          message: mail,
+          file: file.name,
+        });
+        setMail("");
+      } else {
+        set(reference, {
+          message: mail,
+          file: "",
+        });
+        setMail("");
+      }
+      toast.success("Gửi thành công!");
+    } else {
+      toast.error("Vui lòng nhập đầy đủ thông tin!");
+    }
   };
 
-
+  const resetFrom = () => {
+    setFile(null);
+    setMail("");
+  };
 
   return (
     <>
@@ -83,6 +133,7 @@ export default function Mail() {
       </Helmet>
 
       <Container>
+        <Toaster />
         <Stack
           direction="row"
           alignItems="center"
@@ -106,8 +157,9 @@ export default function Mail() {
             placeholder="Hãy nhập lời nhắn vào đây"
             style={StyledTextarea}
             onChange={(e) => {
-              setMail(e.target.value)
+              setMail(e.target.value);
             }}
+            value={mail}
           />
 
           <MuiFileInput
@@ -117,6 +169,7 @@ export default function Mail() {
             variant="outlined"
             placeholder="Chọn file"
             style={StyledInputFile}
+            id="file"
           />
 
           <LoadingButton
@@ -136,7 +189,6 @@ export default function Mail() {
             </Typography>
           </LoadingButton>
 
-          
           <Button
             fullWidth
             size="large"
@@ -147,6 +199,7 @@ export default function Mail() {
               backgroundColor: "#ffefbe",
               color: "#e4ab00",
             }}
+            onClick={resetFrom}
           >
             <Typography variant="p" noWrap style={{ fontWeight: "900" }}>
               Đặt lại

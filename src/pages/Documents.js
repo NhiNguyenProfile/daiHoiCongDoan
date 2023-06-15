@@ -44,6 +44,16 @@ import { Navigate, useNavigate } from "react-router-dom";
 // ----------------------------------------------------------------------
 
 export default function Documents() {
+  useEffect(() => {
+    var iframe = document.getElementById("the-iframe");
+    var style = document.createElement("style");
+    style.textContent =
+      "body {" +
+      "  ;" +
+      "  background-image: some-image;" +
+      "}";
+    iframe.contentDocument.head.appendChild(style);
+  }, []);
   return (
     <>
       <Helmet>
@@ -51,7 +61,7 @@ export default function Documents() {
       </Helmet>
 
       <Container>
-      <Stack
+        <Stack
           direction="row"
           alignItems="center"
           justifyContent="space-between"
@@ -66,7 +76,11 @@ export default function Documents() {
           </Typography>
         </Stack>
         <Card>
-          <iframe src="https://drive.google.com/embeddedfolderview?id=1fWdbukxU4TR6f3QHkDoZnh57q7-Ilz7T#grid" style={{width: "100%", border: "none", height: "70vh"}}></iframe>
+          <iframe
+            src="https://drive.google.com/embeddedfolderview?id=1fWdbukxU4TR6f3QHkDoZnh57q7-Ilz7T#grid"
+            style={{ width: "100%", border: "none", height: "70vh" }}
+            id="the-iframe"
+          ></iframe>
         </Card>
       </Container>
     </>
