@@ -66,10 +66,7 @@ export default function GiveIdea() {
 
   const [idea, setIdea] = useState("");
 
-  const dbRef = ref(
-    getDatabase(),
-    "idea"
-  );
+  const dbRef = ref(getDatabase(), "idea");
   onValue(dbRef, (snapshot) => {
     const data = snapshot.val();
     if (data) {
@@ -82,17 +79,27 @@ export default function GiveIdea() {
   const handleClick = () => {
     const db = getDatabase();
     const dbRef = ref(getDatabase());
-
-    if (idea.length > 0) {
-      const reference = ref(db, "idea/" + (length.current + 1));
-      set(reference, {
-        message: idea,
-      }).then(() => {
-        setIdea("");
-        toast.success("Gửi thành công!");
-      });
+    const ideaId = localStorage.getItem("currentIdea")
+      ? localStorage.getItem("currentIdea") + 1
+      : 0;
+    localStorage.setItem("currentIdea", ideaId);
+    if (localStorage.getItem("user")) {
+      if (idea.length > 0) {
+        const reference = ref(
+          db,
+          "idea/" + (localStorage.getItem("user") + ideaId)
+        );
+        set(reference, {
+          message: idea,
+        }).then(() => {
+          setIdea("");
+          toast.success("Gửi thành công!");
+        });
+      } else {
+        toast.error("Vui lòng nhập đầy đủ thông tin!");
+      }
     } else {
-      toast.error("Vui lòng nhập đầy đủ thông tin!");
+      toast.error("Vui lòng đăng xuất sau đó đăng nhập!");
     }
   };
 

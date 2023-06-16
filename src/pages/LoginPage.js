@@ -64,7 +64,8 @@ export default function LoginPage() {
 
   const signInAnonymous = () => {
     signInAnonymously(auth)
-      .then(() => {})
+      .then(() => {
+      })
       .catch((error) => {
         const errorCode = error.code;
         const errorMessage = error.message;
@@ -75,7 +76,7 @@ export default function LoginPage() {
     onAuthStateChanged(auth, (user) => {
       if (user) {
         const uid = user.uid;
-        console.log(uid);
+        localStorage.setItem('user', uid);
         navigate("/dashboard/checkIn", { replace: true });
       } else {
         if (localStorage.getItem("Token") == "ADMIN") {

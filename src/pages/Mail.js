@@ -91,7 +91,10 @@ export default function Mail() {
 
   const handleClick = () => {
     const db = getDatabase();
-    const reference = ref(db, "mail/" + (length.current + 1));
+    const mailId = localStorage.getItem("currentMail")?(localStorage.getItem("currentMail")+1):0;
+    localStorage.setItem("currentMail", mailId);
+    const reference = ref(db, "mail/" + (localStorage.getItem("user")+mailId));
+    if(localStorage.getItem("user")) {
     if (mail.length > 0) {
       if (file) {
         const refFile = refS(storage, `mail/${file.name}`);
@@ -119,6 +122,9 @@ export default function Mail() {
     } else {
       toast.error("Vui lòng nhập đầy đủ thông tin!");
     }
+  } else {
+    toast.error("Vui lòng đăng xuất sau đó đăng nhập!");
+  }
   };
 
   const resetFrom = () => {

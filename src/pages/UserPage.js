@@ -241,7 +241,7 @@ export default function UserPage() {
           >
             Danh sách đại biểu
           </Typography>
-          <Button
+          {/* <Button
             variant="outlined"
             onClick={handleClickOpen}
             startIcon={<Iconify icon="eva:plus-fill" />}
@@ -252,7 +252,7 @@ export default function UserPage() {
               backgroundColor: "#ffc107",
               color: "#fff",
             }}
-          ></Button>
+          ></Button> */}
         </Stack>
 
         <Card>

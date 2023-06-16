@@ -38,7 +38,7 @@ export default function DashboardAppPage() {
     const data = snapshot.val();
     if (data) {
       const newRows = [];
-      data.forEach((value, key) => {
+      Object.values(data).forEach((value, key) => {
         newRows.push(createData(key, value.message));
       });
       rows.current = newRows;
@@ -55,7 +55,7 @@ export default function DashboardAppPage() {
     const data = snapshot.val();
     if (data) {
       const newRows = [];
-      data.forEach((value, key) => {
+      Object.values(data).forEach((value, key) => {
         newRows.push(createDataMail(key, value.message, value.file));
       });
       mails.current = newRows;
@@ -81,10 +81,8 @@ export default function DashboardAppPage() {
         }
       })
       .catch((error) => {
-        console.log("Failed")
       });
     } catch (error) {
-      console.log("Failed")
     }
     })
     

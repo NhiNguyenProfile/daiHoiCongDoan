@@ -42,7 +42,7 @@ export default function LoginForm() {
   return (
     <>
       <Stack spacing={3}>
-        <TextField name="email" label="Địa chỉ email" onChange={(e) => setEmail(e.target.value)}/>
+        <TextField name="email" label="Tên đăng nhập" onChange={(e) => setEmail(e.target.value)}/>
 
         <TextField
           name="password"
